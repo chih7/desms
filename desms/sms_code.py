@@ -1,13 +1,7 @@
 import re
 
-from desms.constants import VERIFICATION_KEYWORDS_REGEX
-
-LEVEL_NONE = -1
-LEVEL_CHARACTER = 0  # 匹配度：纯字母, 匹配度最低
-LEVEL_TEXT = 1  # 匹配度：数字+字母 混合, 匹配度其次
-LEVEL_DIGITAL_OTHERS = 2  # 匹配度：纯数字, 匹配度最高
-LEVEL_DIGITAL_4 = 3  # 匹配度：4位纯数字，匹配度次之
-LEVEL_DIGITAL_6 = 4  # 匹配度：6位纯数字，匹配度最高
+from desms.constants import VERIFICATION_KEYWORDS_REGEX, LEVEL_NONE, LEVEL_DIGITAL_6, LEVEL_DIGITAL_4, \
+    LEVEL_DIGITAL_OTHERS, LEVEL_CHARACTER, LEVEL_TEXT
 
 
 def contains_chinese(text):
@@ -53,23 +47,22 @@ def parse_by_default_rule(text):
 
 def get_sms_code_cn(text):
     """获取中文短信中包含的验证码"""
-    code_regex = "[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)?"
+    code_regex = "(?<![\d.])[0-9]+(?![\d.])"
     return get_sms_code(code_regex, text)
 
 
 def get_sms_code_en(text):
     """获取英文短信包含的验证码"""
-    code_regex = "[0-9]+(\\.[0-9]+)?"
+    code_regex = "(?<![\d.])[0-9]+(?![\d.])"
     return get_sms_code(code_regex, text)
 
 
 def get_sms_code(code_regex, text):
     """Parse SMS code"""
     possible_codes = []
-
     codes = re.findall(code_regex, text)
     for code in codes:
-        if len(code) >= 4 and len(code) <= 8 and '.' not in code:
+        if 4 <= len(code) <= 8 and '.' not in code:
             possible_codes.append(code)
     if not possible_codes:
         return ""
@@ -77,7 +70,7 @@ def get_sms_code(code_regex, text):
     max_match_level = LEVEL_NONE
     sms_code = ""
     for possible_code in possible_codes:
-        if is_near_keywords(possible_codes, text):
+        if is_near_keywords(possible_code, text):
             cur_level = get_match_level(possible_code)
             if cur_level > max_match_level:
                 max_match_level = cur_level
@@ -117,4 +110,9 @@ def is_near_keywords(matched_str, text):
         begin_index = cur_index = magic_number
     if cur_index + len(matched_str) + magic_number < end_index:
         end_index = cur_index + len(matched_str) + magic_number
-    return contains_keywords(text[begin_index, end_index])
+    return contains_keywords(text[begin_index:end_index])
+
+
+if __name__ == "__main__":
+    text = "您实名注册的验证码是：100473。为保障信息安全，请勿告诉他人。【中国税务1236600】"
+    print(get_sms_code_cn(text))
