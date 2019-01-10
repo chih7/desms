@@ -5,6 +5,7 @@ from telegram.ext import Dispatcher, MessageHandler, Filters
 from desms import config, db, app
 from desms.models import SMSForm, SMS
 from desms.sms_code import parse_sms_code_if_exists, contains_keywords
+from desms.spam import is_spam
 
 token = config['TELEGRAM']['ACCESS_TOKEN']
 admins_id = config['TELEGRAM']['ADMINS_ID']
@@ -55,17 +56,26 @@ def input_handler():
         db.session.add(sms)
         db.session.commit()
 
-        sms = 'from: ' + sms_rn + '/' + sms_rf + 'content:' + sms_rb
+        # is spam?
+        if is_spam(sms_rb):
+            return 'is spam sms'
+
+        sms = 'from: ' + sms_rn + ' / ' + sms_rf + '\n' + sms_rb
 
         # send sms to telegram
         bot.send_message(chat_id=admins_id, text=sms)
 
         if contains_keywords(sms_rb):
             sms_code = parse_sms_code_if_exists(sms_rb)
-            bot.send_message(chat_id=admins_id, text='验证码: ' + sms_code)
+            bot.send_message(chat_id=admins_id, text=sms_code)
         return 'send success'
 
     return 'ok'
+
+
+def list_all_sms():
+    smses = db.session.query(SMS).all()
+    return smses
 
 
 def reply_handler(bot, update):

@@ -153,3 +153,10 @@ Temporary Items
 
 ### config
 config/config.ini
+
+### span train data
+jupyter/data/20w.txt
+jupyter/data/80w.txt
+
+Pipfile.lock
+
