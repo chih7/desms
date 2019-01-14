@@ -3,6 +3,7 @@ from flask import request
 from telegram.ext import Dispatcher, MessageHandler, Filters
 
 from desms import config, db, app
+from desms.constants import INPUT_TOKEN
 from desms.filter import is_need_filter
 from desms.models import SMSForm, SMS
 from desms.sms_code import parse_sms_code_if_exists, contains_keywords
@@ -39,19 +40,21 @@ def hook_handler():
     return 'ok'
 
 
-@app.route('/input', methods=['GET'])
+@app.route('/input', methods=['POST'])
 def input_handler():
     """Set route /input with POST method will trigger this method."""
 
-    # return app.config['SQLALCHEMY_DATABASE_URI']
+    sms_form = SMSForm(request.form)
+    if request.method == "POST" and sms_form.validate():
+        input_token = sms_form.TOKEN.data
+        sms_rn = sms_form.SMSRN.data
+        sms_rb = sms_form.SMSRB.data
+        sms_rf = sms_form.SMSRF.data
+        sms_rd = sms_form.SMSRD.data
+        sms_rt = sms_form.SMSRT.data
 
-    sms_form = SMSForm()
-    if request.method == "GET":  # and sms_form.validate():
-        sms_rn = request.args['SMSRN']
-        sms_rb = request.args['SMSRB']
-        sms_rf = request.args['SMSRF']
-        sms_rd = request.args['SMSRD']
-        sms_rt = request.args['SMSRT']
+        if input_token != INPUT_TOKEN:
+            return 'token verification failed'
 
         sms = SMS(SMSRN=sms_rn, SMSRB=sms_rb, SMSRF=sms_rf, SMSRD=sms_rd, SMSRT=sms_rt)
         db.session.add(sms)
@@ -74,7 +77,7 @@ def input_handler():
             bot.send_message(chat_id=admins_id, text=sms_code)
         return 'send success'
 
-    return 'ok'
+    return 'failed'
 
 
 def list_all_sms():
