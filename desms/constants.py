@@ -53,6 +53,10 @@ PHONE_NUMBER_KEYWORDS = "手机号|电话号" + \
                         "|(?i)phone(?-i)" + \
                         "|(?i)number(?-i)"
 
+FILTER_REGEX = "退订|丹梦"
+
+BLOCK_PHONE_NUMBER_LISTS = ['106980095558', '95588']
+
 LEVEL_NONE = -1
 LEVEL_CHARACTER = 0  # 匹配度：纯字母, 匹配度最低
 LEVEL_TEXT = 1  # 匹配度：数字+字母 混合, 匹配度其次

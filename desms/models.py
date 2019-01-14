@@ -21,6 +21,14 @@ class SMS(db.Model):
         self.SMSRT = SMSRT
 
 
+class BlockPhoneNumber(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    PhoneNumber = db.Column(db.String(64))
+
+    def __init__(self, PhoneNumber):
+        self.PhoneNumber = PhoneNumber
+
+
 class SMSForm(FlaskForm):
     SMSRN = StringField('SMSRN', validators=[InputRequired()])
     SMSRF = StringField('SMSRF', validators=[InputRequired()])

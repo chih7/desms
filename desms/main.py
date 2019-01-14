@@ -3,6 +3,7 @@ from flask import request
 from telegram.ext import Dispatcher, MessageHandler, Filters
 
 from desms import config, db, app
+from desms.filter import is_need_filter
 from desms.models import SMSForm, SMS
 from desms.sms_code import parse_sms_code_if_exists, contains_keywords
 from desms.spam import is_spam
@@ -59,6 +60,9 @@ def input_handler():
         # is spam?
         if is_spam(sms_rb):
             return 'is spam sms'
+        # is need filter?
+        if is_need_filter(sms_rf, sms_rb):
+            return 'is need filter'
 
         sms = 'from: ' + sms_rn + ' / ' + sms_rf + '\n' + sms_rb
 

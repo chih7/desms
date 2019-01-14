@@ -23,10 +23,12 @@ db = SQLAlchemy(app)
 
 app.config.from_object(__name__)
 
-#create all db tables
+
+# create all db tables
 @app.before_first_request
 def create_tables():
-    from desms.models import SMSForm
+    from desms.models import SMSForm, BlockPhoneNumber
     db.create_all()
+
 
 from desms import main

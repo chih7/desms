@@ -14,7 +14,7 @@ def get_stop_words():
     global _STOP_WORDS
     if _STOP_WORDS is not None:
         return _STOP_WORDS
-    stop_words = pd.read_csv(base_dir + 'jupyter/data/stopWord.txt', header=None)
+    stop_words = pd.read_csv(base_dir + 'jupyter/stopWord.txt', header=None)
     _STOP_WORDS = frozenset(stop_words[0].values)
     return _STOP_WORDS
 
