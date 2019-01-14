@@ -16,6 +16,13 @@ def contains_keywords(text):
     return re.search(keywords_regex, text)
 
 
+def is_code_sms(text):
+    """是否是验证码短信"""
+    if contains_keywords(text):
+        return True
+    return False
+
+
 # def contains_keywords(keywords_regex, text):
 #     """是否包含验证码短信关键字"""
 #     return re.search(keywords_regex, text)

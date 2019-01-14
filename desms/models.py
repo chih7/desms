@@ -7,7 +7,7 @@ class SMS(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     SMSRN = db.Column(db.String(64))  # 发件人姓名
     SMSRF = db.Column(db.String(64))  # 发件人号码
-    SMSRB = db.Column(db.String(512)) # 短信内容
+    SMSRB = db.Column(db.String(512))  # 短信内容
     SMSRD = db.Column(db.String(64))  # 发件日期
     SMSRT = db.Column(db.String(64))  # 发件时间
 
